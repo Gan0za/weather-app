@@ -6,6 +6,9 @@ import { apiKey, dictionary } from '../../config';
 const success_ref = ref({});
 const navigator_error = ref(null);
 const weather_ref = ref({
+  location: {
+      name: null
+    },
   current: {
     feelslike_c: null,
     condition: { text: null, icon: null },
@@ -180,7 +183,7 @@ onMounted(async () => {
 					flex-direction: column;
 					justify-content: center;
 					align-items: center;">
-            <h2>{{ region.city }}</h2>
+            <h2>{{ weather_ref.location.name }}</h2>
             <p>Day: {{weather_ref.forecast.forecastday[0].day.maxtemp_c}}°C</p>
             <p>Night: {{weather_ref.forecast.forecastday[0].day.mintemp_c}}°C</p>
             <p>{{ weather_ref.forecast.forecastday[0].day.condition.text }}</p>
