@@ -4,12 +4,12 @@ import { onMounted, ref } from 'vue';
 import { apiKey, dictionary } from '../../config';
 
 const success_ref = ref({});
+const menu_visibl = ref(false);
 const hourly_forecast_visible = ref(false);
-const navigator_error = ref(null);
 const weather_ref = ref({
   location: {
-      name: null
-    },
+    name: null
+  },
   current: {
     feelslike_c: null,
     condition: { text: null, icon: null },
@@ -19,7 +19,7 @@ const weather_ref = ref({
     wind_dir: null,
     wind_kph: null,
     cloud: null,
-    pressure_mb:null
+    pressure_mb: null
   },
   forecast: {
     forecastday: [
@@ -47,33 +47,33 @@ const weather_ref = ref({
   }
 });
 const systemLang = ref('en');
-const region = ref({
-  status: null, // error if status is fail and message is not null
-  message: null,
-  country: null,
-  countryCode: null,
-  region: null,
-  regionName: null,
-  city: null,
-  zip: null,
-  lat: null,
-  lon: null,
-  timezone: null,
-  query: null
-});
-const localDictionary = ref({
-  temp: "Temperature",
-  like: "Feels like",
-  description: "Description",
-  humidity: "Humidity",
-  pressure: "Pressure",
-  city: "City",
-  visibility: "Visibility",
-  wind: "Wind speed",
-  cloud: "Cloud cover",
-  sunrise: "Sunrise",
-  sunset: "Sunset"
-});
+// const region = ref({
+//   status: null, // error if status is fail and message is not null
+//   message: null,
+//   country: null,
+//   countryCode: null,
+//   region: null,
+//   regionName: null,
+//   city: null,
+//   zip: null,
+//   lat: null,
+//   lon: null,
+//   timezone: null,
+//   query: null
+// });
+// const localDictionary = ref({
+//   temp: "Temperature",
+//   like: "Feels like",
+//   description: "Description",
+//   humidity: "Humidity",
+//   pressure: "Pressure",
+//   city: "City",
+//   visibility: "Visibility",
+//   wind: "Wind speed",
+//   cloud: "Cloud cover",
+//   sunrise: "Sunrise",
+//   sunset: "Sunset"
+// });
 
 const getWeatherLocal = (latitude, longitude) => {
   axios
@@ -91,22 +91,22 @@ const getWeatherLocal = (latitude, longitude) => {
     });
 };
 
-const getRegion = (success) => {
-  axios
-    .get('http://ip-api.com/json/?fields=57855' +
-      '&lang=' + systemLang.value)
-    .then(response => {
-      region.value = response.data;
-      if (success && region.value.status != "fail") {
-        getWeatherCity(region.value.city);
-      } else if (success && region.value.status == "fail") {
-        getWeatherCity("London");
-      }
-    })
-    .catch(error => {
-      console.log(error);
-    });
-};
+// const getRegion = (success) => {
+//   axios
+//     .get('https://ip-api.com/json/?fields=57855' +
+//       '&lang=' + systemLang.value)
+//     .then(response => {
+//       region.value = response.data;
+//       if (success && region.value.status != "fail") {
+//         getWeatherCity(region.value.city);
+//       } else if (success && region.value.status == "fail") {
+//         getWeatherCity("London");
+//       }
+//     })
+//     .catch(error => {
+//       console.log(error);
+//     });
+// };
 
 const getWeatherCity = (city) => {
   axios
@@ -132,14 +132,14 @@ const getDatefromUnis = (time) => {
   return hours + ':' + minutes.substr(-2); // + ':' + seconds.substr(-2);
 }
 
-const getDictionary = () => {
-  let lang = systemLang.value;
-  if (dictionary.lang[lang] == null) {
-    localDictionary.value = dictionary.lang.en;
-  } else {
-    localDictionary.value = dictionary.lang[lang];
-  }
-}
+// const getDictionary = () => {
+//   let lang = systemLang.value;
+//   if (dictionary.lang[lang] == null) {
+//     localDictionary.value = dictionary.lang.en;
+//   } else {
+//     localDictionary.value = dictionary.lang[lang];
+//   }
+// }
 
 onMounted(async () => {
   navigator.geolocation.getCurrentPosition(
@@ -147,11 +147,11 @@ onMounted(async () => {
       const { latitude, longitude } = coords
       success_ref.value = { latitude, longitude };
       getWeatherLocal(latitude, longitude);
-      getRegion(false)
+      // getRegion(false)
     }, function error({ message }) {
       console.log(message);
-      navigator_error.value = message;
-      getRegion(true);
+      // getRegion(true);
+      getWeatherCity("London");
     },
     { enableHighAccuracy: true }
   );
@@ -162,8 +162,13 @@ onMounted(async () => {
 </script>
  
 <template>
-  <header>
+  <header class="weather-section flex-center">
+    <div class="flex-space"></div>
     <h1>Weather App</h1>
+    <div class="flex-space"></div>
+    <!-- <span class="material-symbols-outlined" style="cursor: pointer;" @click="menu_visibl = !menu_visibl">
+      menu
+    </span> -->
   </header>
 
   <main>
@@ -172,8 +177,8 @@ onMounted(async () => {
         <h2>Today's Weather</h2>
         <div class="weather-info">
           <div>
-            <img class="weather-img" 
-            :src="weather_ref.forecast.forecastday[0].day.condition.icon?.replace('64x64', '128x128')"
+            <img class="weather-img"
+              :src="weather_ref.forecast.forecastday[0].day.condition.icon?.replace('64x64', '128x128')"
               :alt="weather_ref.forecast.forecastday[0].day.condition.text">
             <p>Now:</p>
             <h1>{{ weather_ref.current.feelslike_c }}°C</h1>
@@ -185,8 +190,8 @@ onMounted(async () => {
 					justify-content: center;
 					align-items: center;">
             <h2>{{ weather_ref.location.name }}</h2>
-            <p>Day: {{weather_ref.forecast.forecastday[0].day.maxtemp_c}}°C</p>
-            <p>Night: {{weather_ref.forecast.forecastday[0].day.mintemp_c}}°C</p>
+            <p>Day: {{ weather_ref.forecast.forecastday[0].day.maxtemp_c }}°C</p>
+            <p>Night: {{ weather_ref.forecast.forecastday[0].day.mintemp_c }}°C</p>
             <p>{{ weather_ref.forecast.forecastday[0].day.condition.text }}</p>
           </div>
         </div>
@@ -254,36 +259,33 @@ onMounted(async () => {
     </section>
 
     <section class="forecast-section">
-      <div style="display: flex; justify-content: center;">
-        <div style=""></div>
+      <div class="flex-center">
+        <div class="flex-space"></div>
         <h2>Hourly Forecast </h2>
-        <span class="material-symbols-outlined md-48"
-        @click="hourly_forecast_visible = !hourly_forecast_visible">
-          {{ hourly_forecast_visible ? 'expand_less' : 'expand_more'}}
+        <div class="flex-space"></div>
+        <span class="material-symbols-outlined md-48" style="cursor: pointer;"
+          @click="hourly_forecast_visible = !hourly_forecast_visible">
+          {{ hourly_forecast_visible ? 'expand_less' : 'expand_more' }}
         </span>
-        
       </div>
-      <div v-if="hourly_forecast_visible==false" class="forecast-cards">
+      <div v-if="hourly_forecast_visible == false" class="forecast-cards">
         <template v-for="item in weather_ref.forecast.forecastday[0].hour">
-          <div class="forecast-card"
-          v-if="(((new Date(item.time_epoch * 1000)).getHours()) >= (new Date()).getHours()) 
-          && (((new Date(item.time_epoch * 1000)).getHours()) <= ((new Date()).getHours() + 5))">
-            <p>{{getDatefromUnis(item.time_epoch)}}</p>
-            <img :src="item.condition.icon" 
-            :alt="item.condition.text">
-            <p>Temp: {{item.temp_c}}°C</p>
-            <p>{{item.condition.text}}</p>
+          <div class="forecast-card" v-if="(((new Date(item.time_epoch * 1000)).getHours()) >= (new Date()).getHours())
+            && (((new Date(item.time_epoch * 1000)).getHours()) <= ((new Date()).getHours() + 5))">
+            <p>{{ getDatefromUnis(item.time_epoch) }}</p>
+            <img :src="item.condition.icon" :alt="item.condition.text">
+            <p>Temp: {{ item.temp_c }}°C</p>
+            <p>{{ item.condition.text }}</p>
           </div>
         </template>
       </div>
       <div v-if="hourly_forecast_visible" class="forecast-cards">
         <template v-for="item in weather_ref.forecast.forecastday[0].hour">
           <div class="forecast-card">
-            <p>{{getDatefromUnis(item.time_epoch)}}</p>
-            <img :src="item.condition.icon" 
-            :alt="item.condition.text">
-            <p>Temp: {{item.temp_c}}°C</p>
-            <p>{{item.condition.text}}</p>
+            <p>{{ getDatefromUnis(item.time_epoch) }}</p>
+            <img :src="item.condition.icon" :alt="item.condition.text">
+            <p>Temp: {{ item.temp_c }}°C</p>
+            <p>{{ item.condition.text }}</p>
           </div>
         </template>
       </div>
@@ -292,14 +294,12 @@ onMounted(async () => {
     <section class="forecast-section">
       <h2>3-Day Forecast</h2>
       <div class="forecast-cards">
-        <div class="forecast-card"
-        v-for="item in weather_ref.forecast.forecastday">
-          <p>{{item.date}}</p>
-          <img :src="item.day.condition.icon" 
-          :alt="item.day.condition.text">
-          <p>Day: {{item.day.maxtemp_c}}°C</p>
-          <p>Night: {{item.day.mintemp_c}}°C</p>
-          <p>{{item.day.condition.text}}</p>
+        <div class="forecast-card" v-for="item in weather_ref.forecast.forecastday">
+          <p>{{ item.date }}</p>
+          <img :src="item.day.condition.icon" :alt="item.day.condition.text">
+          <p>Day: {{ item.day.maxtemp_c }}°C</p>
+          <p>Night: {{ item.day.mintemp_c }}°C</p>
+          <p>{{ item.day.condition.text }}</p>
         </div>
       </div>
     </section>
