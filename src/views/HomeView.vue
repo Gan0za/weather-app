@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue';
 import { apiKey, dictionary } from '../../config';
 
 const success_ref = ref({});
+const hourly_forecast_visible = ref(false);
 const navigator_error = ref(null);
 const weather_ref = ref({
   location: {
@@ -159,7 +160,7 @@ onMounted(async () => {
   getDictionary();
 });
 </script>
-
+ 
 <template>
   <header>
     <h1>Weather App</h1>
@@ -253,21 +254,43 @@ onMounted(async () => {
     </section>
 
     <section class="forecast-section">
-      <h2>Hourly Forecast</h2>
-      <div class="forecast-cards">
-        <div class="forecast-card"
-        v-for="item in weather_ref.forecast.forecastday[0].hour">
-          <p>{{getDatefromUnis(item.time_epoch)}}</p>
-          <img :src="item.condition.icon" 
-          :alt="item.condition.text">
-          <p>Temp: {{item.temp_c}}°C</p>
-          <p>{{item.condition.text}}</p>
-        </div>
+      <div style="display: flex; justify-content: center;">
+        <div style=""></div>
+        <h2>Hourly Forecast </h2>
+        <span class="material-symbols-outlined md-48"
+        @click="hourly_forecast_visible = !hourly_forecast_visible">
+          {{ hourly_forecast_visible ? 'expand_less' : 'expand_more'}}
+        </span>
+        
+      </div>
+      <div v-if="hourly_forecast_visible==false" class="forecast-cards">
+        <template v-for="item in weather_ref.forecast.forecastday[0].hour">
+          <div class="forecast-card"
+          v-if="(((new Date(item.time_epoch * 1000)).getHours()) >= (new Date()).getHours()) 
+          && (((new Date(item.time_epoch * 1000)).getHours()) <= ((new Date()).getHours() + 5))">
+            <p>{{getDatefromUnis(item.time_epoch)}}</p>
+            <img :src="item.condition.icon" 
+            :alt="item.condition.text">
+            <p>Temp: {{item.temp_c}}°C</p>
+            <p>{{item.condition.text}}</p>
+          </div>
+        </template>
+      </div>
+      <div v-if="hourly_forecast_visible" class="forecast-cards">
+        <template v-for="item in weather_ref.forecast.forecastday[0].hour">
+          <div class="forecast-card">
+            <p>{{getDatefromUnis(item.time_epoch)}}</p>
+            <img :src="item.condition.icon" 
+            :alt="item.condition.text">
+            <p>Temp: {{item.temp_c}}°C</p>
+            <p>{{item.condition.text}}</p>
+          </div>
+        </template>
       </div>
     </section>
 
     <section class="forecast-section">
-      <h2>7-Day Forecast</h2>
+      <h2>3-Day Forecast</h2>
       <div class="forecast-cards">
         <div class="forecast-card"
         v-for="item in weather_ref.forecast.forecastday">
