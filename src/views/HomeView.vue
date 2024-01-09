@@ -1,7 +1,8 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import { apiKey, dictionary } from '../../config';
+// import { apiKey, dictionary } from '../../config';
+import { apiKey } from '../../config';
 
 const success_ref = ref({});
 const menu_visibl = ref(false);
@@ -30,7 +31,7 @@ const weather_ref = ref({
         },
         date: null,
         day: {
-          condition: { text: null, icon: '../assets/sunny.png' },
+          condition: { text: null, icon: '' },
           maxtemp_c: null,
           mintemp_c: null
         },
@@ -47,20 +48,6 @@ const weather_ref = ref({
   }
 });
 const systemLang = ref('en');
-// const region = ref({
-//   status: null, // error if status is fail and message is not null
-//   message: null,
-//   country: null,
-//   countryCode: null,
-//   region: null,
-//   regionName: null,
-//   city: null,
-//   zip: null,
-//   lat: null,
-//   lon: null,
-//   timezone: null,
-//   query: null
-// });
 // const localDictionary = ref({
 //   temp: "Temperature",
 //   like: "Feels like",
@@ -84,29 +71,11 @@ const getWeatherLocal = (latitude, longitude) => {
       '&lang=' + systemLang.value)
     .then(response => {
       weather_ref.value = response.data;
-      // console.log(weather_ref.value);
     })
     .catch(error => {
       console.log(error);
     });
 };
-
-// const getRegion = (success) => {
-//   axios
-//     .get('https://ip-api.com/json/?fields=57855' +
-//       '&lang=' + systemLang.value)
-//     .then(response => {
-//       region.value = response.data;
-//       if (success && region.value.status != "fail") {
-//         getWeatherCity(region.value.city);
-//       } else if (success && region.value.status == "fail") {
-//         getWeatherCity("London");
-//       }
-//     })
-//     .catch(error => {
-//       console.log(error);
-//     });
-// };
 
 const getWeatherCity = (city) => {
   axios
@@ -117,7 +86,6 @@ const getWeatherCity = (city) => {
       '&lang=' + systemLang.value)
     .then(response => {
       weather_ref.value = response.data;
-      // console.log(weather_ref.value);
     })
     .catch(error => {
       console.log(error);
@@ -147,28 +115,26 @@ onMounted(async () => {
       const { latitude, longitude } = coords
       success_ref.value = { latitude, longitude };
       getWeatherLocal(latitude, longitude);
-      // getRegion(false)
     }, function error({ message }) {
       console.log(message);
-      // getRegion(true);
       getWeatherCity("London");
     },
     { enableHighAccuracy: true }
   );
 
   systemLang.value = (navigator.language || navigator.systemLanguage || navigator.userLanguage).substr(0, 2).toLowerCase();
-  getDictionary();
+  // getDictionary();
 });
 </script>
  
 <template>
-  <header class="weather-section flex-center">
+  <header class="flex-center weather-section ">
     <div class="flex-space"></div>
     <h1>Weather App</h1>
     <div class="flex-space"></div>
-    <!-- <span class="material-symbols-outlined" style="cursor: pointer;" @click="menu_visibl = !menu_visibl">
+    <span class="material-symbols-outlined md-48" style="cursor: pointer;" @click="menu_visibl = !menu_visibl">
       menu
-    </span> -->
+    </span>
   </header>
 
   <main>
