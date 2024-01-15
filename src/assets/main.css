@@ -108,14 +108,15 @@ footer {
   /* background-color: #f5f5f5; */
 }
 
-.flex-center{
-  display: flex; 
-  flex-wrap: nowrap; 
-  align-items: center;
-}
-
-.flex-space {
-  flex-grow: 1!important;
+.dialog {
+  min-width: 10vw;
+  max-width: 90vw;
+  min-height: 10vh;
+  max-height: 90vh;
+  pointer-events: all;
+  overflow: auto;
+  will-change: scroll-position;
+  border-radius: 4px;
 }
 
 @media (max-width: 640px) {

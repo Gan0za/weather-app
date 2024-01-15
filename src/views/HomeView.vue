@@ -3,9 +3,10 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 // import { apiKey, dictionary } from '../../config';
 import { apiKey } from '../../config';
+import Menu from '../components/Menu.vue';
 
 const success_ref = ref({});
-const menu_visibl = ref(false);
+const menu_confirm = ref(false);
 const hourly_forecast_visible = ref(false);
 const weather_ref = ref({
   location: {
@@ -132,7 +133,7 @@ onMounted(async () => {
     <div class="flex-space"></div>
     <h1>Weather App</h1>
     <div class="flex-space"></div>
-    <span class="material-symbols-outlined md-48" style="cursor: pointer;" @click="menu_visibl = !menu_visibl">
+    <span class="material-symbols-outlined md-48" style="cursor: pointer;" @click="menu_confirm = !menu_visibl">
       menu
     </span>
   </header>
@@ -278,4 +279,9 @@ onMounted(async () => {
         style="width: 104px;height: 50px">
     </a>
   </footer>
+  <Menu 
+    v-if="menu_confirm"
+    :menu_confirm="menu_confirm"
+    @close="menu_confirm=false"
+  />
 </template>
